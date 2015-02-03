@@ -14,3 +14,21 @@ client.on('data', function(data) {
 		throw Error("Unrecognized message type: " + message.type);
 	}
 });
+
+client.on('error', function(error) {
+	console.log("Server had an error of some sort. Server will close connection shortly.");
+	console.log(error.stack);
+});
+
+client.on('end', function() {
+	console.log("Received FIN packet from server.  Client should end now.");
+});
+
+client.on('close', function(hadError) {
+	console.log("Server has fully closed socket.");
+	if(hadError) {
+		throw Error("Server closed with a tranmission error.");
+	}
+});
+
+
