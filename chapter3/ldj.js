@@ -15,8 +15,14 @@ const
 			while(boundary !== -1) {
 				let input = buffer.substr(0, boundary);
 				buffer = buffer.substr(boundary +1);
-				self.emit('message', JSON.parse(input));
- 				//incase there are more messages in the buffer.
+				
+				try {	
+					self.emit('message', JSON.parse(input));
+				} catch(e) {
+					self.emit('error', e);
+				}	
+				
+				//incase there are more messages in the buffer.
 				boundary = buffer.indexOf('\n'); 
 			}
 		});
@@ -24,6 +30,14 @@ const
 		stream.on('close', function(hadError) {
 			self.emit('close', hadError);
 		});
+
+		stream.on('error', function(error) {
+			self.emit('error', error);
+		});
+
+		stream.on('end', function() {
+			self.emit('end');
+		}
 	};
 util.inherits(LDJClient, events.EventEmitter);
 
